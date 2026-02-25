@@ -30,55 +30,67 @@ const PLATFORMS = {
 };
 
 const STEPS = [
-  { id: 'planning', label: '기획', icon: '💡', desc: '주제·타겟·시장분석',
-    tasks: ['주제 및 타겟 독자 설정', '경쟁 도서 리서치', '목차 초안 작성', '출판 일정 수립', '수익 모델 결정'] },
-  { id: 'manuscript', label: '원고', icon: '✍️', desc: '교정·구조·가독성',
-    tasks: ['챕터별 초안 작성', '참고 자료 정리', '이미지/도표 준비', '원고 분량 확인', '초안 완성'] },
-  { id: 'design', label: '편집·표지', icon: '🎨', desc: '메타데이터·포맷',
-    tasks: ['문법/맞춤법 교정', '내용 구성 재검토', '이미지 최적화', 'ePub/PDF 변환', '표지 디자인 완성'] },
-  { id: 'upload', label: '플랫폼 등록', icon: '📤', desc: '체크리스트',
-    tasks: ['교보문고 등록', '리디북스 등록', '예스24 등록', '알라딘 등록', '가격 책정 완료'] },
-  { id: 'marketing', label: '마케팅', icon: '📣', desc: '홍보·SNS·일정',
-    tasks: ['SNS 홍보 콘텐츠 제작', '블로그 리뷰 요청', '이메일 뉴스레터 발송', '유튜브/팟캐스트 홍보', '할인 이벤트 기획'] },
-  { id: 'monitor', label: '관리', icon: '📊', desc: '피드백·업데이트',
-    tasks: ['판매 현황 모니터링', '독자 리뷰 관리', '수익 정산 확인', '개정판 계획 수립', '시리즈 기획 검토'] },
-];
-
-const AI_PROMPTS = {
-  planning: (input) => `전자책 기획을 도와주세요. 주제: "${input}"\n국내 독자(교보문고, 리디북스, 예스24, 알라딘 기준)에게 어필할 수 있도록:\n1) 타겟 독자층 분석\n2) 유사 경쟁 도서 카테고리 3가지\n3) 차별화 포인트 제안\n4) 추천 장르/검색 태그 5개\n간결하고 실용적으로 답해주세요.`,
-  manuscript: (input) => `아래 원고를 분석해주세요:\n"${input}"\n1) 문체 일관성 평가\n2) 가독성 개선 제안 3가지\n3) 챕터 구조 추천\n4) 전자책 분량 가이드 (국내 독자 기준)`,
-  design: (input) => `전자책 메타데이터를 생성해주세요.\n책 정보: "${input}"\n1) 제목 후보 3개\n2) 부제 2개\n3) 책 소개글 (200자 내외)\n4) 검색 키워드 7개\n5) 표지 색상/분위기 제안`,
-  upload: (input) => `"${input}" 전자책 플랫폼 등록 시 자주 하는 실수와 주의사항 5가지를 알려주세요.`,
-  marketing: (input) => `전자책 마케팅 플랜을 만들어주세요.\n책 정보: "${input}"\n1) 인스타그램 홍보 문구 (해시태그 포함)\n2) 블로그 포스팅 제목 3개\n3) 출간 전·후 2주 SNS 일정표\n4) 독자 리뷰 요청 메시지 템플릿`,
-  monitor: (input) => `전자책 출간 후 관리 전략을 알려주세요.\n현황: "${input || '출간 1개월 차'}"\n1) 판매 데이터 핵심 지표\n2) 독자 피드백 수집 방법\n3) 업데이트 주기 및 방법\n4) 시리즈/후속작 전략`,
-};
-
-const QUICK_PROMPTS = [
-  '이 전자책의 타겟 독자층과 마케팅 전략을 분석해주세요.',
-  '목차를 검토하고 개선점을 제안해주세요.',
-  '경쟁 도서 대비 차별화 포인트를 찾아주세요.',
-  '책 소개 문구를 더 매력적으로 개선해주세요.',
-  '가격 책정 전략을 조언해주세요.',
+  {
+    id: 'planning', label: '기획', icon: '💡', desc: '주제·타겟·시장분석',
+    hint: '책의 주제와 타겟 독자를 명확히 하고 시장을 분석하세요.',
+    tasks: ['주제 및 타겟 독자 설정', '경쟁 도서 리서치', '목차 초안 작성', '출판 일정 수립', '수익 모델 결정'],
+    aiPlaceholder: "예: '30대 직장인을 위한 재테크 입문서'",
+    aiPrompt: (v) => `전자책 기획을 도와주세요. 주제: "${v}"\n국내 독자(교보문고, 리디북스, 예스24, 알라딘)에 맞게:\n1) 타겟 독자층 분석\n2) 유사 경쟁 도서 카테고리 3가지\n3) 차별화 포인트 제안\n4) 추천 검색 태그 5개\n간결하고 실용적으로 답해주세요.`,
+  },
+  {
+    id: 'manuscript', label: '원고', icon: '✍️', desc: '교정·구조·가독성',
+    hint: '원고 일부를 붙여넣으면 문체, 구조, 가독성을 분석해드립니다.',
+    tasks: ['챕터별 초안 작성', '참고 자료 정리', '이미지/도표 준비', '원고 분량 확인', '초안 완성'],
+    aiPlaceholder: '원고 일부를 붙여넣으세요 (첫 단락 또는 챕터 도입부 권장)',
+    aiPrompt: (v) => `아래 원고를 분석해주세요:\n"${v}"\n1) 문체 일관성 평가\n2) 가독성 개선 제안 3가지\n3) 챕터 구조 추천\n4) 전자책 적정 분량 가이드`,
+  },
+  {
+    id: 'design', label: '편집·표지', icon: '🎨', desc: '메타데이터·포맷',
+    hint: '책 정보를 입력하면 제목 후보, 소개글, 키워드를 자동 생성합니다.',
+    tasks: ['문법/맞춤법 교정', '내용 구성 재검토', '이미지 최적화', 'ePub/PDF 변환', '표지 디자인 완성'],
+    aiPlaceholder: "예: '제목: 나의 첫 부업 / 장르: 자기계발 / 내용 요약'",
+    aiPrompt: (v) => `전자책 메타데이터를 생성해주세요.\n책 정보: "${v}"\n1) 제목 후보 3개\n2) 부제 2개\n3) 책 소개글 200자\n4) 검색 키워드 7개\n5) 표지 분위기 제안`,
+  },
+  {
+    id: 'upload', label: '플랫폼 등록', icon: '📤', desc: '플랫폼별 체크리스트',
+    hint: '헤더에서 플랫폼을 선택하면 해당 플랫폼의 등록 체크리스트가 표시됩니다.',
+    tasks: ['교보문고 등록 완료', '리디북스 등록 완료', '예스24 등록 완료', '알라딘 등록 완료', '가격 책정 완료'],
+    aiPlaceholder: "예: '교보문고' — 등록 시 주의사항을 알려드립니다.",
+    aiPrompt: (v) => `"${v}" 전자책 플랫폼 등록 시 자주 하는 실수와 주의사항 5가지를 알려주세요.`,
+  },
+  {
+    id: 'marketing', label: '마케팅', icon: '📣', desc: '홍보·SNS·일정',
+    hint: '책 정보를 입력하면 SNS 문구, 블로그 제목, 2주 홍보 일정을 생성합니다.',
+    tasks: ['SNS 홍보 콘텐츠 제작', '블로그 리뷰 요청', '이메일 뉴스레터 발송', '유튜브/팟캐스트 홍보', '할인 이벤트 기획'],
+    aiPlaceholder: "예: '책 제목: 나의 첫 부업 / 타겟: 20~30대 직장인 / 출간일: 3월 1일'",
+    aiPrompt: (v) => `전자책 마케팅 플랜을 만들어주세요.\n책 정보: "${v}"\n1) 인스타그램 홍보 문구 (해시태그 포함)\n2) 블로그 포스팅 제목 3개\n3) 출간 전·후 2주 SNS 일정표\n4) 독자 리뷰 요청 메시지 템플릿`,
+  },
+  {
+    id: 'monitor', label: '관리', icon: '📊', desc: '피드백·업데이트',
+    hint: '출간 후 현황을 입력하면 판매 전략과 업데이트 방향을 제안합니다.',
+    tasks: ['판매 현황 모니터링', '독자 리뷰 관리', '수익 정산 확인', '개정판 계획 수립', '시리즈 기획 검토'],
+    aiPlaceholder: "예: '출간 1개월, 교보 30권, 리디 20권, 리뷰 5개, 평점 4.2'",
+    aiPrompt: (v) => `전자책 출간 후 관리 전략을 알려주세요.\n현황: "${v || '출간 1개월 차'}"\n1) 판매 데이터 핵심 지표\n2) 독자 피드백 수집 방법\n3) 업데이트 주기 및 방법\n4) 시리즈/후속작 전략`,
+  },
 ];
 
 export default function EbookPublisher() {
   const [activeStep, setActiveStep] = useState('planning');
-  const [checks, setChecks] = useState({});
+  const [activePlatform, setActivePlatform] = useState('kyobo');
+  const [stepChecks, setStepChecks] = useState({});
   const [platformChecks, setPlatformChecks] = useState({});
-  const [activePlatformTab, setActivePlatformTab] = useState('kyobo');
   const [aiInput, setAiInput] = useState('');
   const [aiResult, setAiResult] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
-  const [bookInfo, setBookInfo] = useState({ title: '', author: '', genre: '', price: '' });
 
-  const toggleCheck = (key) => setChecks(prev => ({ ...prev, [key]: !prev[key] }));
-  const togglePlatformCheck = (key) => setPlatformChecks(prev => ({ ...prev, [key]: !prev[key] }));
+  const toggleStepCheck = (key) => setStepChecks(p => ({ ...p, [key]: !p[key] }));
+  const togglePlatformCheck = (key) => setPlatformChecks(p => ({ ...p, [key]: !p[key] }));
 
-  const getStepProgress = (stepId) => {
-    const step = STEPS.find(s => s.id === stepId);
-    if (!step) return 0;
-    const done = step.tasks.filter((_, i) => checks[`${stepId}-${i}`]).length;
-    return Math.round((done / step.tasks.length) * 100);
+  const getStepProgress = (id) => {
+    const s = STEPS.find(s => s.id === id);
+    if (!s) return 0;
+    const done = s.tasks.filter((_, i) => stepChecks[`${id}-${i}`]).length;
+    return Math.round((done / s.tasks.length) * 100);
   };
 
   const getPlatformProgress = (key) => {
@@ -96,15 +108,14 @@ export default function EbookPublisher() {
     setAiLoading(true);
     setAiResult('');
     try {
-      const promptFn = AI_PROMPTS[activeStep];
-      const prompt = promptFn ? promptFn(aiInput) : aiInput;
+      const step = STEPS.find(s => s.id === activeStep);
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }]
+          messages: [{ role: 'user', content: step.aiPrompt(aiInput) }]
         })
       });
       const data = await res.json();
@@ -115,230 +126,218 @@ export default function EbookPublisher() {
     setAiLoading(false);
   };
 
-  const currentStep = STEPS.find(s => s.id === activeStep);
-  const p = PLATFORMS[activePlatformTab];
-
-  const S = {
-    page: { minHeight: '100vh', background: '#0A0A0F', color: '#E8E8F2', fontFamily: "'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif" },
-    header: { background: '#0D0D16', borderBottom: '1px solid #252535', padding: '16px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, position: 'sticky', top: 0, zIndex: 100 },
-    logoSub: { fontSize: 10, letterSpacing: 4, color: '#6B6B8A', textTransform: 'uppercase', marginBottom: 4 },
-    logoTitle: { fontSize: 22, fontWeight: 700, color: '#fff', margin: 0 },
-    progressWrap: { display: 'flex', alignItems: 'center', gap: 10 },
-    progressLabel: { fontSize: 13, color: '#6B6B8A' },
-    progressBar: { width: 120, height: 6, background: '#252535', borderRadius: 3, overflow: 'hidden' },
-    progressFill: { height: '100%', background: 'linear-gradient(90deg,#1A5EE8,#4A8AFF)', borderRadius: 3, transition: 'width 0.5s' },
-    progressPct: { fontSize: 13, fontWeight: 700, color: '#4A8AFF' },
-    layout: { display: 'flex', minHeight: 'calc(100vh - 65px)' },
-    sidebar: { width: 185, flexShrink: 0, background: '#0D0D14', borderRight: '1px solid #1E1E2E', padding: '20px 10px', position: 'sticky', top: 65, height: 'calc(100vh - 65px)', overflowY: 'auto' },
-    sideLabel: { fontSize: 10, letterSpacing: 3, color: '#444', textTransform: 'uppercase', padding: '0 12px', marginBottom: 14 },
-    main: { flex: 1, padding: '28px 28px', overflowY: 'auto' },
-    card: { background: '#12121A', border: '1px solid #252535', borderRadius: 14, padding: 20, marginBottom: 20 },
-    sectionTitle: { fontSize: 20, fontWeight: 700, marginBottom: 6 },
-    sectionHint: { fontSize: 13, color: '#6B6B8A', marginBottom: 20, lineHeight: 1.6 },
-    input: { width: '100%', background: '#0A0A10', border: '1px solid #252535', borderRadius: 8, color: '#E8E8F2', fontSize: 14, padding: '10px 14px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' },
-    textarea: { width: '100%', background: '#0A0A10', border: '1px solid #252535', borderRadius: 8, color: '#E8E8F2', fontSize: 14, padding: '12px 14px', resize: 'vertical', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', minHeight: 90, lineHeight: 1.7 },
-    btnAI: { marginTop: 12, padding: '10px 22px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#1A5EE8,#4A8AFF)', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' },
-    btnAIDisabled: { marginTop: 12, padding: '10px 22px', borderRadius: 8, border: 'none', background: '#222', color: '#555', fontSize: 14, fontWeight: 600, cursor: 'not-allowed', fontFamily: 'inherit' },
-    aiResult: { background: '#0A1428', border: '1px solid #1A3A6E', borderRadius: 14, padding: 20, marginBottom: 20 },
-    aiResultLabel: { fontSize: 10, letterSpacing: 3, color: '#4A8AFF', fontWeight: 600, marginBottom: 10, textTransform: 'uppercase' },
-    aiResultText: { fontSize: 14, lineHeight: 1.9, color: '#C0D0F0', whiteSpace: 'pre-wrap' },
-    infoGrid: { display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 16 },
-    infoItem: { background: '#0A0A10', borderRadius: 8, padding: '10px 14px' },
-    infoLabel: { fontSize: 10, color: '#555', marginBottom: 4 },
-    tabRow: { display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap' },
-    quickRow: { display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 },
-    bookGrid: { display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 20 },
-  };
+  const cur = STEPS.find(s => s.id === activeStep);
+  const p = PLATFORMS[activePlatform];
 
   return (
-    <div style={S.page}>
-      {/* Header */}
-      <header style={S.header}>
+    <div style={{ minHeight: '100vh', background: '#0A0A0F', color: '#E8E8F2', fontFamily: "'Noto Sans KR','Apple SD Gothic Neo',sans-serif" }}>
+
+      {/* ── 헤더: 로고 | 플랫폼 버튼들 | 전체 진행률 ── */}
+      <header style={{ background: '#0D0D16', borderBottom: '1px solid #252535', padding: '14px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, position: 'sticky', top: 0, zIndex: 100 }}>
+
+        {/* 로고 */}
         <div>
-          <div style={S.logoSub}>전자책 출판 서포트 시스템</div>
-          <h1 style={S.logoTitle}>📖 eBook Publisher</h1>
+          <div style={{ fontSize: 10, letterSpacing: 4, color: '#6B6B8A', textTransform: 'uppercase', marginBottom: 3 }}>전자책 출판 서포트 시스템</div>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#fff' }}>📖 eBook Publisher</h1>
         </div>
-        <div style={S.progressWrap}>
-          <span style={S.progressLabel}>전체 진행률</span>
-          <div style={S.progressBar}>
-            <div style={{ ...S.progressFill, width: `${overallProgress}%` }} />
+
+        {/* 플랫폼 버튼 + 전체 진행률 */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+
+          {/* 플랫폼 선택 버튼 */}
+          <div style={{ display: 'flex', gap: 7 }}>
+            {Object.entries(PLATFORMS).map(([key, plat]) => {
+              const isActive = activePlatform === key;
+              return (
+                <button key={key} onClick={() => setActivePlatform(key)}
+                  style={{
+                    padding: '5px 14px', borderRadius: 20,
+                    border: `2px solid ${isActive ? plat.color : '#252535'}`,
+                    background: isActive ? plat.color + '22' : 'transparent',
+                    color: isActive ? plat.accent : '#555',
+                    fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s'
+                  }}>
+                  {plat.name}
+                </button>
+              );
+            })}
           </div>
-          <span style={S.progressPct}>{overallProgress}%</span>
+
+          {/* 전체 진행률 — 맨 우측 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, color: '#6B6B8A' }}>전체 진행률</span>
+            <div style={{ width: 100, height: 5, background: '#252535', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${overallProgress}%`, background: 'linear-gradient(90deg,#1A5EE8,#4A8AFF)', borderRadius: 3, transition: 'width 0.5s' }} />
+            </div>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#4A8AFF', minWidth: 32 }}>{overallProgress}%</span>
+          </div>
         </div>
       </header>
 
-      <div style={S.layout}>
-        {/* Sidebar */}
-        <aside style={S.sidebar}>
-          <div style={S.sideLabel}>출판 단계</div>
+      <div style={{ display: 'flex', minHeight: 'calc(100vh - 65px)' }}>
+
+        {/* ── 사이드바 ── */}
+        <aside style={{ width: 180, flexShrink: 0, background: '#0D0D14', borderRight: '1px solid #1E1E2E', padding: '20px 10px', position: 'sticky', top: 65, height: 'calc(100vh - 65px)', overflowY: 'auto' }}>
+          <div style={{ fontSize: 10, letterSpacing: 3, color: '#3A3A4A', textTransform: 'uppercase', padding: '0 12px', marginBottom: 14 }}>출판 단계</div>
           {STEPS.map((step, i) => {
             const prog = getStepProgress(step.id);
             const isActive = activeStep === step.id;
             return (
-              <button key={step.id} onClick={() => { setActiveStep(step.id); setAiResult(''); setAiInput(''); }}
-                style={{ width: '100%', padding: '12px 12px', marginBottom: 3, borderRadius: 10, border: 'none',
+              <button key={step.id}
+                onClick={() => { setActiveStep(step.id); setAiResult(''); setAiInput(''); }}
+                style={{
+                  width: '100%', padding: '12px 12px', marginBottom: 3, borderRadius: 10, border: 'none',
                   background: isActive ? 'linear-gradient(135deg,#1A2040,#1A3060)' : 'transparent',
                   color: isActive ? '#7BAAFF' : '#555', cursor: 'pointer', textAlign: 'left',
-                  display: 'flex', alignItems: 'center', gap: 10, fontFamily: 'inherit' }}>
-                <span style={{ fontSize: 18 }}>{step.icon}</span>
+                  display: 'flex', alignItems: 'center', gap: 9, fontFamily: 'inherit'
+                }}>
+                <span style={{ fontSize: 17 }}>{step.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{i + 1}. {step.label}</div>
                   <div style={{ fontSize: 10, color: isActive ? '#4A6AAA' : '#3A3A4A', marginTop: 2 }}>{step.desc}</div>
                 </div>
-                {prog > 0 && (
-                  <span style={{ fontSize: 10, color: isActive ? '#4A8AFF' : '#3A3A5A', fontWeight: 600 }}>{prog}%</span>
-                )}
+                {prog > 0 && <span style={{ fontSize: 10, color: '#4A8AFF', fontWeight: 700 }}>{prog}%</span>}
               </button>
             );
           })}
         </aside>
 
-        {/* Main */}
-        <main style={S.main}>
-
-          {/* 책 기본 정보 */}
-          <div style={S.card}>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 14, color: '#AAB' }}>📖 책 기본 정보</div>
-            <div style={S.bookGrid}>
-              {[
-                { key: 'title', label: '책 제목', placeholder: '전자책 제목' },
-                { key: 'author', label: '저자명', placeholder: '저자명' },
-                { key: 'genre', label: '장르/카테고리', placeholder: '예: 자기계발' },
-                { key: 'price', label: '판매 가격', placeholder: '예: 9,900원' },
-              ].map(({ key, label, placeholder }) => (
-                <div key={key}>
-                  <div style={{ fontSize: 11, color: '#555', marginBottom: 6 }}>{label}</div>
-                  <input style={S.input} type="text" value={bookInfo[key]} placeholder={placeholder}
-                    onChange={e => setBookInfo(prev => ({ ...prev, [key]: e.target.value }))} />
-                </div>
-              ))}
-            </div>
-          </div>
+        {/* ── 메인: 탭별 내용만 표시 ── */}
+        <main style={{ flex: 1, padding: '28px 32px', overflowY: 'auto' }}>
 
           {/* 단계 제목 */}
-          <div style={S.sectionTitle}>{currentStep?.icon} {currentStep?.label} 단계</div>
-          <div style={S.sectionHint}>{currentStep?.desc} — 체크리스트를 완료하고 AI 분석을 활용하세요.</div>
+          <div style={{ fontSize: 22, fontWeight: 700, marginBottom: 5 }}>{cur?.icon} {cur?.label} 단계</div>
+          <div style={{ fontSize: 13, color: '#6B6B8A', marginBottom: 22, lineHeight: 1.6 }}>{cur?.hint}</div>
 
-          {/* 워크플로우 체크리스트 */}
-          <div style={S.card}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#AAB', marginBottom: 12 }}>
-              {currentStep?.label} 체크리스트
-              <span style={{ marginLeft: 10, fontSize: 12, color: '#4A8AFF' }}>{getStepProgress(activeStep)}%</span>
-            </div>
-            <div style={{ height: 4, background: '#1E1E2E', borderRadius: 2, marginBottom: 16, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${getStepProgress(activeStep)}%`, background: 'linear-gradient(90deg,#1A5EE8,#4AFFAA)', borderRadius: 2, transition: 'width 0.4s' }} />
-            </div>
-            {currentStep?.tasks.map((task, i) => {
-              const key = `${activeStep}-${i}`;
-              const done = checks[key];
-              return (
-                <div key={i} onClick={() => toggleCheck(key)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', marginBottom: 6,
-                    borderRadius: 8, cursor: 'pointer', transition: 'all 0.2s',
-                    background: done ? '#1A3A1A' : '#0A0A10',
-                    border: `1px solid ${done ? '#1A5A1A' : '#1E1E2E'}` }}>
-                  <div style={{ width: 20, height: 20, borderRadius: 10, border: `2px solid ${done ? '#4AFF88' : '#333'}`,
-                    background: done ? '#4AFF88' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 700, color: '#000', flexShrink: 0, transition: 'all 0.2s' }}>
-                    {done && '✓'}
-                  </div>
-                  <span style={{ fontSize: 13, color: done ? '#555' : '#CCC', textDecoration: done ? 'line-through' : 'none' }}>
-                    {task}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* 플랫폼 등록 체크리스트 */}
-          <div style={S.card}>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 14, color: '#AAB' }}>🏪 플랫폼 등록 체크리스트</div>
-            <div style={S.tabRow}>
-              {Object.entries(PLATFORMS).map(([key, plat]) => (
-                <button key={key} onClick={() => setActivePlatformTab(key)}
-                  style={{ padding: '7px 16px', borderRadius: 8, border: `2px solid ${activePlatformTab === key ? plat.color : '#252535'}`,
-                    background: activePlatformTab === key ? plat.color + '22' : 'transparent',
-                    color: activePlatformTab === key ? plat.accent : '#555',
-                    fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-                  {plat.name}
+          {/* ── 기획 / 원고 / 편집 / 마케팅 / 관리 탭: AI 입력 + 체크리스트 ── */}
+          {activeStep !== 'upload' && (
+            <>
+              {/* AI 분석 박스 */}
+              <div style={{ background: '#12121A', border: '1px solid #252535', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#7A7A9A', marginBottom: 12 }}>🤖 AI 분석 — {cur?.label} 단계</div>
+                <textarea value={aiInput} rows={4}
+                  placeholder={cur?.aiPlaceholder}
+                  onChange={e => setAiInput(e.target.value)}
+                  style={{ width: '100%', background: '#0A0A10', border: '1px solid #252535', borderRadius: 8, color: '#E8E8F2', fontSize: 13, padding: '11px 13px', resize: 'vertical', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', lineHeight: 1.7, minHeight: 90 }} />
+                <button onClick={handleAI} disabled={aiLoading}
+                  style={{ marginTop: 10, padding: '10px 22px', borderRadius: 8, border: 'none', background: aiLoading ? '#222' : 'linear-gradient(135deg,#1A5EE8,#4A8AFF)', color: aiLoading ? '#555' : '#fff', fontSize: 13, fontWeight: 600, cursor: aiLoading ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
+                  {aiLoading ? '⏳ 분석 중...' : '✨ AI 분석 시작'}
                 </button>
-              ))}
-            </div>
-            {p && (
-              <>
-                <div style={S.infoGrid}>
+              </div>
+
+              {/* AI 결과 */}
+              {aiResult && (
+                <div style={{ background: '#0A1428', border: '1px solid #1A3A6E', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+                  <div style={{ fontSize: 10, letterSpacing: 3, color: '#4A8AFF', fontWeight: 600, marginBottom: 10, textTransform: 'uppercase' }}>✦ AI 분석 결과</div>
+                  <div style={{ fontSize: 14, lineHeight: 1.9, color: '#C0D0F0', whiteSpace: 'pre-wrap' }}>{aiResult}</div>
+                </div>
+              )}
+
+              {/* 단계별 체크리스트 */}
+              <div style={{ background: '#12121A', border: '1px solid #252535', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#7A7A9A' }}>{cur?.label} 체크리스트</span>
+                  <span style={{ fontSize: 12, color: '#4A8AFF', fontWeight: 700 }}>{getStepProgress(activeStep)}%</span>
+                </div>
+                <div style={{ height: 4, background: '#1E1E2E', borderRadius: 2, marginBottom: 16, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${getStepProgress(activeStep)}%`, background: 'linear-gradient(90deg,#1A5EE8,#4AFFAA)', borderRadius: 2, transition: 'width 0.4s' }} />
+                </div>
+                {cur?.tasks.map((task, i) => {
+                  const key = `${activeStep}-${i}`;
+                  const done = stepChecks[key];
+                  return (
+                    <div key={i} onClick={() => toggleStepCheck(key)}
+                      style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', marginBottom: 6, borderRadius: 8, cursor: 'pointer', transition: 'all 0.2s', background: done ? '#0F2A0F' : '#0A0A10', border: `1px solid ${done ? '#1A5A1A' : '#1E1E2E'}` }}>
+                      <div style={{ width: 20, height: 20, borderRadius: 10, border: `2px solid ${done ? '#4AFF88' : '#333'}`, background: done ? '#4AFF88' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#000', flexShrink: 0, transition: 'all 0.2s' }}>
+                        {done && '✓'}
+                      </div>
+                      <span style={{ fontSize: 13, color: done ? '#555' : '#CCC', textDecoration: done ? 'line-through' : 'none' }}>{task}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {/* ── 플랫폼 등록 탭: 선택한 플랫폼 체크리스트 ── */}
+          {activeStep === 'upload' && (
+            <>
+              {/* 플랫폼 탭 버튼 */}
+              <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+                {Object.entries(PLATFORMS).map(([key, plat]) => {
+                  const isActive = activePlatform === key;
+                  return (
+                    <button key={key} onClick={() => setActivePlatform(key)}
+                      style={{ padding: '8px 20px', borderRadius: 8, border: `2px solid ${isActive ? plat.color : '#252535'}`, background: isActive ? plat.color + '22' : 'transparent', color: isActive ? plat.accent : '#555', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}>
+                      {plat.name}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* 선택 플랫폼 정보 카드 */}
+              <div style={{ background: '#12121A', border: `1px solid ${p.color}44`, borderRadius: 14, padding: 20, marginBottom: 20 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, color: p.accent, marginBottom: 16 }}>🏪 {p.name} 등록 체크리스트</div>
+
+                {/* 4칸 정보 */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10, marginBottom: 14 }}>
                   {[['지원 포맷', p.formats], ['ISBN', p.isbn], ['검토 기간', p.days], ['수수료', p.fee]].map(([label, value]) => (
-                    <div key={label} style={S.infoItem}>
-                      <div style={S.infoLabel}>{label}</div>
+                    <div key={label} style={{ background: '#0A0A10', borderRadius: 8, padding: '9px 13px' }}>
+                      <div style={{ fontSize: 10, color: '#555', marginBottom: 4 }}>{label}</div>
                       <div style={{ fontSize: 13, fontWeight: 600, color: p.accent }}>{value}</div>
                     </div>
                   ))}
                 </div>
-                <div style={{ background: p.color + '14', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#999', marginBottom: 14, lineHeight: 1.6 }}>
+
+                {/* 팁 */}
+                <div style={{ background: p.color + '12', borderRadius: 8, padding: '9px 13px', fontSize: 12, color: '#999', marginBottom: 14, lineHeight: 1.6 }}>
                   💡 {p.tip}
                 </div>
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#555', marginBottom: 6 }}>
-                    <span>등록 준비 완료도</span>
-                    <span style={{ color: p.accent }}>{getPlatformProgress(activePlatformTab)}%</span>
-                  </div>
-                  <div style={{ height: 5, background: '#1E1E2E', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${getPlatformProgress(activePlatformTab)}%`, background: `linear-gradient(90deg,${p.color},${p.accent})`, borderRadius: 3, transition: 'width 0.4s' }} />
-                  </div>
+
+                {/* 진행률 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#555', marginBottom: 6 }}>
+                  <span>등록 준비 완료도</span>
+                  <span style={{ color: p.accent }}>{getPlatformProgress(activePlatform)}%</span>
                 </div>
+                <div style={{ height: 5, background: '#1E1E2E', borderRadius: 3, marginBottom: 14, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${getPlatformProgress(activePlatform)}%`, background: `linear-gradient(90deg,${p.color},${p.accent})`, borderRadius: 3, transition: 'width 0.4s' }} />
+                </div>
+
+                {/* 체크리스트 항목 */}
                 {p.items.map((item, i) => {
-                  const key = `${activePlatformTab}-${i}`;
+                  const key = `${activePlatform}-${i}`;
                   const done = platformChecks[key];
                   return (
                     <div key={i} onClick={() => togglePlatformCheck(key)}
-                      style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', marginBottom: 6,
-                        borderRadius: 8, cursor: 'pointer', transition: 'all 0.2s',
-                        background: done ? p.color + '14' : '#0A0A10',
-                        border: `1px solid ${done ? p.color + '44' : '#1E1E2E'}` }}>
-                      <div style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${done ? p.color : '#333'}`,
-                        background: done ? p.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0, transition: 'all 0.2s' }}>
+                      style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', marginBottom: 6, borderRadius: 8, cursor: 'pointer', transition: 'all 0.2s', background: done ? p.color + '14' : '#0A0A10', border: `1px solid ${done ? p.color + '55' : '#1E1E2E'}` }}>
+                      <div style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${done ? p.color : '#333'}`, background: done ? p.color : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0, transition: 'all 0.2s' }}>
                         {done && '✓'}
                       </div>
-                      <span style={{ fontSize: 13, color: done ? '#555' : '#CCC', textDecoration: done ? 'line-through' : 'none' }}>
-                        {item}
-                      </span>
+                      <span style={{ fontSize: 13, color: done ? '#555' : '#CCC', textDecoration: done ? 'line-through' : 'none' }}>{item}</span>
                     </div>
                   );
                 })}
-              </>
-            )}
-          </div>
+              </div>
 
-          {/* AI 분석 */}
-          <div style={S.card}>
-            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 6, color: '#AAB' }}>🤖 AI 분석</div>
-            <div style={{ fontSize: 13, color: '#6B6B8A', marginBottom: 14, lineHeight: 1.6 }}>
-              현재 단계({currentStep?.label})에 맞는 분석을 제공합니다. 빠른 프롬프트를 선택하거나 직접 입력하세요.
-            </div>
-            <div style={S.quickRow}>
-              {QUICK_PROMPTS.map((prompt, i) => (
-                <button key={i} onClick={() => setAiInput(prompt)}
-                  style={{ fontSize: 12, background: '#0D1A3A', color: '#4A8AFF', border: '1px solid #1A3A6E',
-                    padding: '6px 14px', borderRadius: 20, cursor: 'pointer', fontFamily: 'inherit' }}>
-                  {prompt}
+              {/* AI 주의사항 */}
+              <div style={{ background: '#12121A', border: '1px solid #252535', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#7A7A9A', marginBottom: 12 }}>🤖 플랫폼 등록 주의사항 AI 조회</div>
+                <textarea value={aiInput} rows={2}
+                  placeholder={cur?.aiPlaceholder}
+                  onChange={e => setAiInput(e.target.value)}
+                  style={{ width: '100%', background: '#0A0A10', border: '1px solid #252535', borderRadius: 8, color: '#E8E8F2', fontSize: 13, padding: '11px 13px', resize: 'vertical', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box', lineHeight: 1.7 }} />
+                <button onClick={handleAI} disabled={aiLoading}
+                  style={{ marginTop: 10, padding: '10px 22px', borderRadius: 8, border: 'none', background: aiLoading ? '#222' : 'linear-gradient(135deg,#1A5EE8,#4A8AFF)', color: aiLoading ? '#555' : '#fff', fontSize: 13, fontWeight: 600, cursor: aiLoading ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
+                  {aiLoading ? '⏳ 조회 중...' : '✨ 주의사항 확인'}
                 </button>
-              ))}
-            </div>
-            <textarea style={S.textarea} value={aiInput} rows={3}
-              placeholder={`현재 단계(${currentStep?.label})에서 분석할 내용을 입력하세요...`}
-              onChange={e => setAiInput(e.target.value)} />
-            <button onClick={handleAI} disabled={aiLoading}
-              style={aiLoading ? S.btnAIDisabled : S.btnAI}>
-              {aiLoading ? '⏳ AI 분석 중...' : '✨ AI 분석 시작'}
-            </button>
-          </div>
-
-          {aiResult && (
-            <div style={S.aiResult}>
-              <div style={S.aiResultLabel}>✦ AI 분석 결과</div>
-              <div style={S.aiResultText}>{aiResult}</div>
-            </div>
+                {aiResult && (
+                  <div style={{ marginTop: 16, background: '#0A1428', border: '1px solid #1A3A6E', borderRadius: 10, padding: 16 }}>
+                    <div style={{ fontSize: 10, letterSpacing: 3, color: '#4A8AFF', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase' }}>✦ AI 안내</div>
+                    <div style={{ fontSize: 14, lineHeight: 1.9, color: '#C0D0F0', whiteSpace: 'pre-wrap' }}>{aiResult}</div>
+                  </div>
+                )}
+              </div>
+            </>
           )}
 
         </main>
