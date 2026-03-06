@@ -100,17 +100,14 @@ const CHECKLIST = {
 };
 
 async function callClaude(prompt) {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const res = await fetch("/api/claude", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      messages: [{ role: "user", content: prompt }]
-    })
+    body: JSON.stringify({ prompt }),
   });
   const data = await res.json();
-  return data.content?.[0]?.text || "응답을 생성하지 못했습니다.";
+  if (!res.ok) throw new Error(data.error || "API 오류");
+  return data.result;
 }
 
 export default function App() {
